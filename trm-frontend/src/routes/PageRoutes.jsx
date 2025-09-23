@@ -8,6 +8,9 @@ import Login from "../pages/user/Login";
 import Homepage from "../pages/user/HomePage";
 import ExplorePage from "../pages/explorepage/Explore";
 import RecommendationPage from "../pages/explorepage/recommendation/Recommendationpage";
+import BlogCreatePage from "../pages/explorepage/blog/Blogcreate";
+import BlogEdit from "../pages/explorepage/blog/BlogEdit";
+import BlogList from "../pages/explorepage/blog/BlogList";
 
 import CategoryPage from "../components/home/Categorypages";
 
@@ -35,7 +38,7 @@ import AdminDashboard from "../pages/admin/AdminDashboard";
 import SidebarWrapper from "../pages/admin/SideBarWrapper";
 
 import ManageRecommendation from "../pages/admin/AdminRecommendation"
-
+import ManageBlogs from "../pages/admin/ManageBlogs";
 
 
 
@@ -66,6 +69,11 @@ const PageRoutes = () => {
     
       <Route path="/explore" element={<MainLayout><ExplorePage /></MainLayout>} />
        <Route path="/explore/recommendplace" element={<MainLayout><RecommendationPage /></MainLayout>} />
+        <Route path="/blogs/create" element={<MainLayout><BlogCreatePage /></MainLayout>} />
+        <Route path="/edit-blog/:id" element={<BlogEdit />} />
+       
+
+         <Route path="/blogs/my-blogs" element={<MainLayout><BlogList /></MainLayout>} />
       
       
       
@@ -83,6 +91,7 @@ const PageRoutes = () => {
       <Route path="/admin/manage-user" element={<SidebarWrapper><ManageUser /></SidebarWrapper>} />
        
         <Route path="/admin/manage-recommendation" element={<SidebarWrapper><ManageRecommendation /></SidebarWrapper>} />
+         <Route path="/admin/manage-blogs" element={<SidebarWrapper><ManageBlogs /></SidebarWrapper>} />
       
      
     </Routes>

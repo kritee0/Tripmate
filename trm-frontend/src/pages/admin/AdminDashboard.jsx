@@ -34,23 +34,29 @@ const AdminDashboard = () => {
         <nav className="flex-1 p-4 space-y-2">
           <NavLink to="/admin/manage-user" className={linkClasses}>
             <Users size={20} />
-            Manage Users
+           Users
           </NavLink>
 
           <NavLink to="/admin/manage-agencies" className={linkClasses}>
             <Building2 size={20} />
-            Manage Agencies
+            Agencies
           </NavLink>
 
           <NavLink to="/admin/manage-places" className={linkClasses}>
             <MapPin size={20} />
-            Manage Places
+           Places
           </NavLink>
 
             <NavLink to="/admin/manage-recommendation" className={linkClasses}>
             <Lightbulb size={20} />
-            Manage-Recommendation
+            Recommendation
           </NavLink>
+          
+            <NavLink to="/admin/manage-blogs" className={linkClasses}>
+            <Lightbulb size={20} />
+            Blogs
+          </NavLink>
+
 
           <NavLink to="/admin/overview" className={linkClasses}>
             <BarChart2 size={20} />

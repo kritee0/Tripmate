@@ -19,6 +19,7 @@ import recommendationRoutes from "./routes/RecommendationRoutes.js"
 import postRoutes from "./routes/PostRoutes.js"
 
 
+
 dotenv.config();
 const app = express();
 const port = 4000;
@@ -47,7 +48,13 @@ app.use("/api/notifications", notificationRoutes);
 app.use("/api/interests", travelInterestRoutes);
 app.use("/api/journey", travelJourneyRoutes);
 app.use("/api/blogs", blogRoutes);
+
 app.use("/api/posts", postRoutes);  
+
+
+
+
+
 app.use("/api/admin/recommendations", recommendationRoutes);
 
 
