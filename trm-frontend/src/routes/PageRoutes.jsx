@@ -39,6 +39,7 @@ import SidebarWrapper from "../pages/admin/SideBarWrapper";
 
 import ManageRecommendation from "../pages/admin/AdminRecommendation"
 import ManageBlogs from "../pages/admin/ManageBlogs";
+import BlogDetails from "../pages/explorepage/blog/BlogDetails";
 
 
 
@@ -74,6 +75,7 @@ const PageRoutes = () => {
        
 
          <Route path="/blogs/my-blogs" element={<MainLayout><BlogList /></MainLayout>} />
+         <Route path="/blogs/:id" element={<BlogDetails />} />
       
       
       

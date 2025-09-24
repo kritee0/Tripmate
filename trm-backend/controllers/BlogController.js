@@ -8,14 +8,19 @@ export const createBlog = async (req, res) => {
       return res.status(401).json({ success: false, message: "Unauthorized" });
     }
 
+    const allowedStatuses = ["draft", "ready"];
+    const status = allowedStatuses.includes(req.body.status)
+      ? req.body.status
+      : "draft"; // fallback if invalid
+
     const blog = new Blog({
       title: req.body.title,
       content: req.body.content,
       description: req.body.description,
       imageUrl: req.file ? `/uploads/${req.file.filename}` : undefined,
       author: req.user.id,
-      status: "draft", // default
-      tags: req.body.tags || [],
+      status, // validated status
+      tags: req.body.tags ? JSON.parse(req.body.tags) : [],
     });
 
     await blog.save();
@@ -26,6 +31,7 @@ export const createBlog = async (req, res) => {
     res.status(500).json({ success: false, message: err.message });
   }
 };
+
 
 // -------------------- GET ALL BLOGS --------------------
 export const getAllBlogs = async (req, res) => {
@@ -146,3 +152,23 @@ export const getUserBlogs = async (req, res) => {
     res.status(500).json({ success: false, message: err.message });
   }
 };
+
+// -------------------- GET READY BLOGS (ADMIN ONLY) --------------------
+export const getReadyBlogs = async (req, res) => {
+  try {
+    if (!req.user || req.user.role !== "Admin") {
+      return res.status(403).json({ success: false, message: "Only admin can access" });
+    }
+
+    const blogs = await Blog.find({ status: "ready" })
+      .sort({ createdAt: -1 })
+      .populate("author", "name");
+
+    res.status(200).json({ success: true, data: blogs });
+  } catch (err) {
+    console.error("GetReadyBlogs Error:", err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+

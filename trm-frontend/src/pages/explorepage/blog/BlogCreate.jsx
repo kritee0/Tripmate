@@ -12,12 +12,12 @@ const BlogCreate = () => {
   const navigate = useNavigate();
 
   const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
+  const [content, setContent] = useState(""); // Markdown
   const [description, setDescription] = useState("");
   const [tags, setTags] = useState([]);
   const [imageFile, setImageFile] = useState(null);
   const [imageUrl, setImageUrl] = useState("");
-  const [status, setStatus] = useState(""); // no default
+  const [status, setStatus] = useState(""); 
   const [saving, setSaving] = useState(false);
 
   const handleFileChange = (e) => {
@@ -32,16 +32,16 @@ const BlogCreate = () => {
     if (!user) return toast.error("Please login first");
     if (!title.trim()) return toast.error("Title is required");
 
-    setStatus(newStatus); // update preview immediately
+    setStatus(newStatus);
 
     try {
       setSaving(true);
       const formData = new FormData();
       formData.append("title", title);
-      formData.append("content", content);
+      formData.append("content", content); // Save Markdown
       formData.append("description", description);
       formData.append("tags", JSON.stringify(tags));
-      formData.append("status", newStatus); // "draft" or "ready"
+      formData.append("status", newStatus);
       if (imageFile) formData.append("image", imageFile);
 
       const res = await api.post("/blogs/create", formData, {
@@ -53,7 +53,6 @@ const BlogCreate = () => {
           `Blog ${newStatus === "draft" ? "saved as draft" : "ready for review"}!`
         );
 
-        // navigate after 2 seconds
         setTimeout(() => {
           navigate("/blogs/my-blogs");
         }, 2000);
@@ -70,7 +69,7 @@ const BlogCreate = () => {
 
   return (
     <div className="max-w-6xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
-      {/* Circular Back Button */}
+      {/* Back Button */}
       <div className="col-span-full mb-4">
         <button
           onClick={() => navigate(-1)}
@@ -80,6 +79,7 @@ const BlogCreate = () => {
         </button>
       </div>
 
+      {/* Blog Form */}
       <div className="space-y-4">
         <label className="block mb-1 font-semibold">Title</label>
         <input
@@ -140,7 +140,7 @@ const BlogCreate = () => {
         </div>
       </div>
 
-      {/* Pass status to preview */}
+      {/* Preview */}
       <div>
         <BlogPreview
           blog={{ title, content, description, tags, imageUrl, status }}
@@ -151,5 +151,6 @@ const BlogCreate = () => {
 };
 
 export default BlogCreate;
+
 
 
