@@ -15,12 +15,12 @@ import { upload } from "../middleware/uploadMiddleware.js"; // ✅ correct impor
 const router = express.Router();
 
 // Public routes
-router.get("/", getAllBlogs);
+router.get("/", checkAuthorization, getAllBlogs);
 router.get("/my-blogs", checkAuthorization, getUserBlogs);
 router.get("/ready", checkAuthorization, getReadyBlogs);
 
 
-router.get("/:id", getBlogById);
+router.get("/:id",checkAuthorization,  getBlogById);
 
 // Authenticated user routes
 router.post("/create", checkAuthorization, upload.single("image"), createBlog);

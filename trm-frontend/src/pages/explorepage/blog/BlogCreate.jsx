@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+// BlogCreate.jsx
+import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import MDEditor from "@uiw/react-md-editor";
 import BlogPreview from "./BlogPreview";
@@ -7,18 +8,31 @@ import { useAuth } from "../../../context/AuthContext";
 import api from "../../../utils/apiUtiles";
 import { ArrowLeft } from "lucide-react";
 
-const BlogCreate = () => {
+const BlogCreate = ({ initialData = null }) => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
 
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState(""); // Markdown
-  const [description, setDescription] = useState("");
-  const [tags, setTags] = useState([]);
+  // Form state
+  const [title, setTitle] = useState(initialData?.title || "");
+  const [content, setContent] = useState(initialData?.content || "");
+  const [description, setDescription] = useState(initialData?.description || "");
+  const [tags, setTags] = useState(initialData?.tags || []);
   const [imageFile, setImageFile] = useState(null);
-  const [imageUrl, setImageUrl] = useState("");
-  const [status, setStatus] = useState(""); 
+  const [imageUrl, setImageUrl] = useState(initialData?.imageUrl || "");
+  const [status, setStatus] = useState(initialData?.status || "");
   const [saving, setSaving] = useState(false);
+
+  // Update form when initialData changes (important for edit)
+  useEffect(() => {
+    if (initialData) {
+      setTitle(initialData.title || "");
+      setContent(initialData.content || "");
+      setDescription(initialData.description || "");
+      setTags(initialData.tags || []);
+      setImageUrl(initialData.imageUrl || "");
+      setStatus(initialData.status || "");
+    }
+  }, [initialData]);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -29,37 +43,47 @@ const BlogCreate = () => {
   };
 
   const handleSave = async (newStatus) => {
-    if (!user) return toast.error("Please login first");
     if (!title.trim()) return toast.error("Title is required");
 
-    setStatus(newStatus);
+    setSaving(true);
 
     try {
-      setSaving(true);
       const formData = new FormData();
       formData.append("title", title);
-      formData.append("content", content); // Save Markdown
+      formData.append("content", content);
       formData.append("description", description);
       formData.append("tags", JSON.stringify(tags));
       formData.append("status", newStatus);
       if (imageFile) formData.append("image", imageFile);
 
-      const res = await api.post("/blogs/create", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      let res;
+      if (initialData?._id) {
+        // Editing existing blog
+        res = await api.patch(`/blogs/${initialData._id}`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${user.token}`,
+          },
+        });
+      } else {
+        // Creating new blog
+        res = await api.post("/blogs/create", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${user.token}`,
+          },
+        });
+      }
 
       if (res.data.success) {
         toast.success(
           `Blog ${newStatus === "draft" ? "saved as draft" : "ready for review"}!`
         );
-
-        setTimeout(() => {
-          navigate("/blogs/my-blogs");
-        }, 2000);
+        navigate("/blogs/my-blogs");
       }
     } catch (err) {
       console.error(err);
-      toast.error(err.response?.data?.message || "Failed to create blog");
+      toast.error(err.response?.data?.message || "Failed to save blog");
     } finally {
       setSaving(false);
     }
@@ -79,17 +103,16 @@ const BlogCreate = () => {
         </button>
       </div>
 
-      {/* Blog Form */}
+      {/* Form */}
       <div className="space-y-4">
-        <label className="block mb-1 font-semibold">Title</label>
         <input
           type="text"
+          placeholder="Title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           className="w-full text-2xl font-bold border-b border-gray-300 focus:outline-none p-1"
         />
 
-        <label className="block mb-1 font-semibold">Content (Markdown)</label>
         <MDEditor
           value={content}
           onChange={setContent}
@@ -97,16 +120,16 @@ const BlogCreate = () => {
           className="border rounded"
         />
 
-        <label className="block mb-1 font-semibold">Description</label>
         <textarea
           className="w-full p-2 border rounded"
+          placeholder="Description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />
 
-        <label className="block mb-1 font-semibold">Tags</label>
         <input
           type="text"
+          placeholder="Tags (comma separated)"
           value={tags.join(", ")}
           onChange={(e) =>
             setTags(e.target.value.split(",").map((k) => k.trim()))
@@ -114,7 +137,6 @@ const BlogCreate = () => {
           className="w-full p-2 border rounded"
         />
 
-        <label className="block mb-1 font-semibold">Upload Image</label>
         <input
           type="file"
           accept="image/*"
@@ -151,6 +173,5 @@ const BlogCreate = () => {
 };
 
 export default BlogCreate;
-
 
 

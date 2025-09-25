@@ -50,15 +50,27 @@ export const getAllBlogs = async (req, res) => {
   }
 };
 
-// -------------------- GET BLOG BY ID --------------------
 export const getBlogById = async (req, res) => {
   try {
     const blog = await Blog.findById(req.params.id).populate("author", "name");
     if (!blog) return res.status(404).json({ success: false, message: "Blog not found" });
 
-    // Only published blogs visible to normal users
-    if (blog.status !== "published" && req.user?.role !== "Admin") {
-      return res.status(403).json({ success: false, message: "Unauthorized" });
+    // Only allow author to fetch drafts
+    if (blog.status === "draft") {
+      if (req.user?._id.toString() !== blog.author._id.toString()) {
+        return res.status(403).json({ success: false, message: "Unauthorized" });
+      }
+    }
+
+    // Admin can fetch ready/published, others only published
+    if (blog.status === "ready" || blog.status === "published") {
+      if (
+        req.user?.role !== "Admin" && 
+        req.user?._id.toString() !== blog.author._id.toString() &&
+        blog.status !== "published"
+      ) {
+        return res.status(403).json({ success: false, message: "Unauthorized" });
+      }
     }
 
     res.status(200).json({ success: true, data: blog });
@@ -67,6 +79,8 @@ export const getBlogById = async (req, res) => {
     res.status(500).json({ success: false, message: err.message });
   }
 };
+
+
 
 export const updateBlog = async (req, res) => {
   try {

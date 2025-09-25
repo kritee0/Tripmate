@@ -49,7 +49,7 @@ const PackagesUI = () => {
             <div className="space-y-2">
               {/* All Packages Button */}
               <button
-                onClick={() => setActiveFilter("All")}
+                onClick={() => setActiveFilter("Trekking")}
                 className={`w-full text-left px-4 py-2 rounded-lg transition-all duration-200 ${
                   activeFilter === "All"
                     ? "bg-blue-600 text-white shadow"

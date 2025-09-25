@@ -21,6 +21,8 @@ export const checkAuthorization = async (req, res, next) => {
     }
 
     req.user = user;
+
+    console.log('middle', req.user)
     next();
   } catch (error) {
     console.error("Auth error:", error);
