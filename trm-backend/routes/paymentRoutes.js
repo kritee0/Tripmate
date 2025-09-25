@@ -16,7 +16,7 @@ esewaRouter.get("/success/", async (req, res) => {
 
     // ✅ update status to paid
     const bookingDetails = await Booking.findOneAndUpdate(
-      { bookingId },x
+      { bookingId },
       { status: "paid" },
       { new: true } // return updated doc
     );
