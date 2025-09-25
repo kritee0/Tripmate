@@ -15,6 +15,7 @@ const router = express.Router();
 // ✅ Create a new booking (only logged-in users)
 router.post("/", checkAuthorization, checkLoggedInUser, createBooking);
 
+
 // ✅ Get all bookings (only admin)
 router.get("/", checkAuthorization, (req, res, next) => {
   if (req.user.role !== "admin") {

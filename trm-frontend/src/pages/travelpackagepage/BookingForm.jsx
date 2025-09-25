@@ -2,15 +2,27 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useAuth } from "../../context/AuthContext"; // make sure this exists
 
+import { EasySewa } from "@prasuco/easy-sewa";
+import { v4 as uuidv4 } from "uuid";
+
 const BookingForm = ({ pkg, onClose }) => {
   const { user } = useAuth(); // ✅ get logged-in user
+
+  const easySewa = new EasySewa({
+    environment: "development",
+    failure_url: "http://localhost:3000/failure",
+    success_url: "http://localhost:4000/api/esewa/success",
+    product_code: "EPAYTEST",
+    secret: "8gBm/:&EnhH.1/q",
+  });
 
   // Prefill user info
   const [formData, setFormData] = useState({
     address: "",
     phoneNumber: "",
-    numberOfPeople: 1,
+    numberOfTravellers: 1,
     travelDate: "",
+    bookingId: uuidv4(),
   });
 
   const [status, setStatus] = useState({ type: "", message: "" });
@@ -19,7 +31,7 @@ const BookingForm = ({ pkg, onClose }) => {
 
   useEffect(() => {
     if (user) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         address: user.address || "",
         phoneNumber: user.phoneNumber || "",
@@ -29,7 +41,7 @@ const BookingForm = ({ pkg, onClose }) => {
 
   const handleChange = (e) => {
     const { name, value, type } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [name]: type === "number" ? Number(value) : value,
     }));
@@ -38,15 +50,21 @@ const BookingForm = ({ pkg, onClose }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (formData.numberOfPeople < 1) {
-      setStatus({ type: "error", message: "Number of travellers must be at least 1." });
+    if (formData.numberOfTravellers < 1) {
+      setStatus({
+        type: "error",
+        message: "Number of travellers must be at least 1.",
+      });
       return;
     }
 
     const today = new Date();
     const selectedDate = new Date(formData.travelDate);
     if (selectedDate < today.setHours(0, 0, 0, 0)) {
-      setStatus({ type: "error", message: "Travel date cannot be in the past." });
+      setStatus({
+        type: "error",
+        message: "Travel date cannot be in the past.",
+      });
       return;
     }
 
@@ -68,10 +86,20 @@ const BookingForm = ({ pkg, onClose }) => {
       );
 
       if (res.data.success) {
-        setStatus({ type: "success", message: "Booking successful! We’ll contact you soon." });
+        setStatus({
+          type: "success",
+          message: "Booking successful! We’ll contact you soon.",
+        });
         setLastBookingId(res.data.data._id);
+        easySewa.pay({
+          amount: res.data.data.totalPrice,
+          transaction_uuid: formData.bookingId,
+        });
       } else {
-        setStatus({ type: "error", message: res.data.message || "Booking failed." });
+        setStatus({
+          type: "error",
+          message: res.data.message || "Booking failed.",
+        });
       }
     } catch (err) {
       console.error(err);
@@ -102,7 +130,7 @@ const BookingForm = ({ pkg, onClose }) => {
   };
 
   const packagePrice = parseFloat(pkg?.price) || 0;
-  const totalPrice = packagePrice * formData.numberOfPeople;
+  const totalPrice = packagePrice * formData.numberOfTravellers;
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm p-4 z-50">
@@ -112,17 +140,29 @@ const BookingForm = ({ pkg, onClose }) => {
         </h2>
 
         {status.message && (
-          <div className={`mb-3 p-2 text-sm rounded ${status.type === "success" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
+          <div
+            className={`mb-3 p-2 text-sm rounded ${
+              status.type === "success"
+                ? "bg-green-100 text-green-700"
+                : "bg-red-100 text-red-700"
+            }`}
+          >
             {status.message}
           </div>
         )}
 
         {status.type === "success" ? (
           <div className="text-center space-x-2">
-            <button onClick={onClose} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+            <button
+              onClick={onClose}
+              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            >
               Close
             </button>
-            <button onClick={handleCancelBooking} className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
+            <button
+              onClick={handleCancelBooking}
+              className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+            >
               Cancel Booking
             </button>
           </div>
@@ -130,9 +170,15 @@ const BookingForm = ({ pkg, onClose }) => {
           <form onSubmit={handleSubmit} className="space-y-3">
             {/* Display user info */}
             <div className="p-3 bg-gray-50 rounded border text-sm text-gray-700">
-              <p><strong>Name:</strong> {user?.name}</p>
-              <p><strong>Email:</strong> {user?.email}</p>
-              <p className="text-gray-500 mt-1">These details will be used for the booking.</p>
+              <p>
+                <strong>Name:</strong> {user?.name}
+              </p>
+              <p>
+                <strong>Email:</strong> {user?.email}
+              </p>
+              <p className="text-gray-500 mt-1">
+                These details will be used for the booking.
+              </p>
             </div>
 
             {/* Editable fields */}
@@ -156,8 +202,8 @@ const BookingForm = ({ pkg, onClose }) => {
             />
             <input
               type="number"
-              name="numberOfPeople"
-              value={formData.numberOfPeople}
+              name="numberOfTravellers"
+              value={formData.numberOfTravellers}
               onChange={handleChange}
               min="1"
               placeholder="Number of travellers"
@@ -176,16 +222,26 @@ const BookingForm = ({ pkg, onClose }) => {
 
             {/* Price info */}
             <div className="text-sm font-medium text-gray-800">
-              <div>Price per person: Rs. {packagePrice.toLocaleString("en-IN")}</div>
+              <div>
+                Price per person: Rs. {packagePrice.toLocaleString("en-IN")}
+              </div>
               <div>Total: Rs. {totalPrice.toLocaleString("en-IN")}</div>
             </div>
 
             {/* Buttons */}
             <div className="flex justify-between mt-3">
-              <button type="button" onClick={onClose} className="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500">
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500"
+              >
                 Cancel
               </button>
-              <button type="submit" disabled={loading} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50">
+              <button
+                type="submit"
+                disabled={loading}
+                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+              >
                 {loading ? "Saving..." : "Book"}
               </button>
             </div>
@@ -197,18 +253,3 @@ const BookingForm = ({ pkg, onClose }) => {
 };
 
 export default BookingForm;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

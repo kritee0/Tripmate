@@ -4,7 +4,7 @@ import TravelPackage from "../../models/travelpackage.js";
 // ✅ Create Booking
 export const createBooking = async (req, res) => {
   try {
-    const { packageId, numberOfTravellers, travelDate } = req.body;
+    const { packageId, numberOfTravellers, travelDate, bookingId } = req.body;
 
     // Check package exists
     const travelPackage = await TravelPackage.findById(packageId);
@@ -47,6 +47,7 @@ export const createBooking = async (req, res) => {
       numberOfTravellers: numberOfTravellers || 1,
       totalPrice,
       bookingDate: new Date(),
+      bookingId,
       status: "Pending",
     });
 

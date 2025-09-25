@@ -28,7 +28,6 @@ const bookingSchema = new mongoose.Schema(
     bookingId: {
       type: String,
       unique: true,
-      default: () => new mongoose.Types.ObjectId().toString(),
     },
 
     totalPrice: {

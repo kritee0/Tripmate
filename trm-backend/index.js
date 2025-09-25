@@ -17,6 +17,8 @@ import travelJourneyRoutes from "./routes/journeyRoutes.js"
 import blogRoutes from "./routes/blogRoutes.js";
 import recommendationRoutes from "./routes/RecommendationRoutes.js"
 import postRoutes from "./routes/PostRoutes.js"
+import esewaRouter from "./routes/paymentRoutes.js";
+
 
 
 
@@ -48,6 +50,7 @@ app.use("/api/notifications", notificationRoutes);
 app.use("/api/interests", travelInterestRoutes);
 app.use("/api/journey", travelJourneyRoutes);
 app.use("/api/blogs", blogRoutes);
+app.use("/api/esewa",esewaRouter)
 
 app.use("/api/posts", postRoutes);  
 
