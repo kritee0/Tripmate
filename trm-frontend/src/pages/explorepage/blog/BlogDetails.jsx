@@ -1,8 +1,19 @@
-// src/pages/explore/blog/BlogDetails.jsx
+// src/pages/explorepage/blog/BlogDetails.jsx
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../../../utils/apiUtiles";
 import Loader from "../../../components/common/Loader";
+import showdown from "showdown";
+import NavBarLoggedIn from "../../../components/common/Navbar1";
+import Footer from "../../../components/common/Footer";
+import { ArrowLeft } from "lucide-react"; // nice icon for back button
+
+const converter = new showdown.Converter({
+  simpleLineBreaks: true,
+  strikethrough: true,
+  tables: true,
+  ghCompatibleHeaderId: true,
+});
 
 const BlogDetails = () => {
   const { id } = useParams();
@@ -14,7 +25,9 @@ const BlogDetails = () => {
     const fetchBlog = async () => {
       try {
         const res = await api.get(`/blogs/${id}`);
-        if (res.data.success) setBlog(res.data.data);
+        if (res.data.success) {
+          setBlog(res.data.data);
+        }
       } catch (err) {
         console.error(err);
       } finally {
@@ -24,48 +37,58 @@ const BlogDetails = () => {
     fetchBlog();
   }, [id]);
 
-  if (loading) return <Loader fullscreen={false} />;
-  if (!blog) return <p className="text-center mt-10">Blog not found.</p>;
+  if (loading) return <Loader fullscreen={true} />;
+  if (!blog) return <p className="text-center text-gray-500">Blog not found.</p>;
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      {/* Back Button */}
-      <button
-        onClick={() => navigate(-1)}
-        className="mb-4 px-3 py-2 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center gap-1"
-      >
-        ← Back
-      </button>
+    <>
+      {/* Navbar */}
+      <NavBarLoggedIn />
 
-      <h1 className="text-3xl font-bold mb-2">{blog.title}</h1>
-      <p className="text-sm text-gray-500 mb-4">By: {blog.author?.name || "Unknown"}</p>
+      {/* Blog Content */}
+      <div className="pt-28 pb-12">
+        <div className="max-w-4xl mx-auto p-6 bg-white shadow rounded relative">
+          {/* Back Button */}
+          <button
+            onClick={() => navigate(-1)}
+            className="absolute -top-4 -left-4 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-full p-2 shadow-md transition"
+            aria-label="Go back"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </button>
 
-      {blog.imageUrl && (
-        <img
-          src={`http://localhost:4000${blog.imageUrl}`}
-          alt={blog.title}
-          className="w-full h-96 object-cover mb-6 rounded"
-        />
-      )}
+          <h1 className="text-3xl font-bold mb-2">{blog.title}</h1>
+          <p className="text-sm text-gray-500 mb-4">
+            By: {blog.author?.name || "Unknown"} •{" "}
+            {new Date(blog.createdAt).toLocaleDateString()}
+          </p>
 
-      <p className="text-gray-700 mb-4 font-semibold">{blog.description}</p>
-      <p className="text-gray-600 whitespace-pre-wrap mb-6">{blog.content}</p>
+          {blog.imageUrl && (
+            <img
+              src={`http://localhost:4000${blog.imageUrl}`}
+              alt={blog.title}
+              className="w-full h-80 object-cover rounded mb-4"
+            />
+          )}
 
-      {blog.tags?.length > 0 && (
-        <div className="flex flex-wrap gap-2 mb-6">
-          {blog.tags.map((tag, idx) => (
-            <span
-              key={idx}
-              className="bg-gray-200 text-gray-700 px-2 py-1 rounded-full text-xs"
-            >
-              {tag}
-            </span>
-          ))}
+          <p className="mb-4 text-gray-700 font-semibold">{blog.description}</p>
+
+          <div
+            className="prose prose-lg max-w-none"
+            dangerouslySetInnerHTML={{
+              __html: converter.makeHtml(blog.content || ""),
+            }}
+          />
         </div>
-      )}
-    </div>
+      </div>
+
+      {/* Footer */}
+      <Footer />
+    </>
   );
 };
 
 export default BlogDetails;
+
+
 

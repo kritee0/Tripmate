@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../../../utils/apiUtiles";
-import BlogCreate from "./BlogCreate";
+import BlogCreate from "./Blogcreate";
 import { useAuth } from "../../../context/AuthContext";
 import Loader from "../../../components/common/Loader";
 import toast from "react-hot-toast";

@@ -23,7 +23,7 @@ const ExplorePage = () => {
           // Published blogs
           setPublishedBlogs(allBlogs.filter((b) => b.status === "published"));
 
-          // User's draft/ready blogs
+          // User's draft/ready blogs preview
           if (user) {
             const myUnpublished = allBlogs.filter(
               (b) =>
@@ -56,7 +56,7 @@ const ExplorePage = () => {
             Read stories, travel tips, and experiences shared by fellow travelers!
           </p>
 
-          {/* Buttons: always show */}
+          {/* Buttons */}
           <div className="flex justify-center gap-4 flex-wrap mt-4">
             <button
               className="px-4 py-2 bg-emerald-600 text-white rounded-lg font-medium hover:bg-green-500 transition-colors"
@@ -74,7 +74,7 @@ const ExplorePage = () => {
           </div>
         </div>
 
-        {/* Optional Preview of User's Draft/Ready Blogs */}
+        {/* User's Draft/Ready Blogs Preview */}
         {user && unpublishedBlogs.length > 0 && (
           <div className="mb-8">
             <h2 className="text-2xl font-semibold text-gray-800 mb-4">
@@ -88,7 +88,9 @@ const ExplorePage = () => {
                   showActions={true}
                   onClick={() => navigate(`/blogs/${b._id}`)}
                   onEdit={(id) => navigate(`/edit-blog/${id}`)}
-                  onDelete={() => toast("Go to My Blogs page to delete")}
+                  onDelete={() =>
+                    toast("To delete a blog, go to your My Blogs page")
+                  }
                 />
               ))}
             </div>

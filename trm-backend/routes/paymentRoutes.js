@@ -1,41 +1,54 @@
 import express from "express";
-import Booking from "./../models/BookingModel/BookModel.js";
+import Booking from "../models/BookingModel/BookModel.js";
 
 const esewaRouter = express.Router();
 
-esewaRouter.get("/success/", async (req, res) => {
+/**
+ * eSewa payment success callback
+ * eSewa sends GET request with base64-encoded transaction data
+ */
+esewaRouter.get("/success", async (req, res) => {
   try {
     const data = req.query;
 
-    // decode the Esewa payload
-    const transationData = JSON.parse(
+    if (!data.data) {
+      return res.redirect("http://localhost:5173/esewa/failure");
+    }
+
+    // Decode base64 eSewa payload
+    const transactionData = JSON.parse(
       Buffer.from(data.data, "base64").toString("utf-8")
     );
 
-    const bookingId = transationData.transaction_uuid;
+    const bookingId = transactionData.transaction_uuid;
 
-    // ✅ update status to paid
+    // Update booking status to 'paid'
     const bookingDetails = await Booking.findOneAndUpdate(
       { bookingId },
       { status: "paid" },
-      { new: true } // return updated doc
+      { new: true }
     );
 
     if (!bookingDetails) {
-      return res.status(404).json({ success: false, message: "Booking not found" });
+      return res.redirect("http://localhost:5173/esewa/failure");
     }
 
-
-    // TODO : redirect to payment success page in frontend.
-    res.json({
-      success: true,
-      message: "Payment successful, booking updated to paid",
-      data: bookingDetails,
-    });
+    // Redirect to frontend success page with bookingId
+    return res.redirect(
+      `http://localhost:5173/esewa/success?bookingId=${bookingId}`
+    );
   } catch (err) {
     console.error("Esewa success error:", err);
-    res.status(500).json({ success: false, message: "Failed to update booking" });
+    return res.redirect("http://localhost:5173/esewa/failure");
   }
 });
 
+/**
+ * eSewa payment failure route
+ */
+esewaRouter.get("/failure", (req, res) => {
+  return res.redirect("http://localhost:5173/esewa/failure");
+});
+
 export default esewaRouter;
+

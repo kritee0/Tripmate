@@ -48,7 +48,7 @@ const AgencyBookings = () => {
               <tr key={booking._id} className="text-center">
                 <td className="border px-4 py-2">{booking.bookingId}</td>
                 <td className="border px-4 py-2">{booking.user.name}</td>
-                <td className="border px-4 py-2">{booking.travelPackage?.title}</td>
+                <td className="border px-4 py-2">{booking.travelPackage?._id}</td>
                 <td className="border px-4 py-2">{booking.numberOfTravellers}</td>
                 <td className="border px-4 py-2">${booking.totalPrice}</td>
                 <td className="border px-4 py-2">{booking.status}</td>

@@ -37,41 +37,7 @@ const MyBlogs = () => {
   const handleDelete = async (id, status) => {
     if (status === "published") return toast.error("Cannot delete published blog");
 
-    const confirmDelete = await new Promise((resolve) => {
-      toast.custom(
-        (t) => (
-          <div
-            className={`bg-white shadow-lg rounded-xl p-4 flex flex-col gap-2 ${
-              t.visible ? "animate-enter" : "animate-leave"
-            }`}
-          >
-            <p className="font-semibold">Are you sure you want to delete this blog?</p>
-            <div className="flex gap-2 justify-end mt-2">
-              <button
-                onClick={() => {
-                  toast.dismiss(t.id);
-                  resolve(false);
-                }}
-                className="px-3 py-1 bg-gray-300 rounded hover:bg-gray-400"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => {
-                  toast.dismiss(t.id);
-                  resolve(true);
-                }}
-                className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-500"
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        ),
-        { duration: Infinity }
-      );
-    });
-
+    const confirmDelete = window.confirm("Are you sure you want to delete this blog?");
     if (!confirmDelete) return;
 
     try {

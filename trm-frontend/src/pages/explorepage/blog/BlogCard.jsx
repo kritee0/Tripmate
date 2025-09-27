@@ -39,17 +39,19 @@ const BlogCard = ({ blog, onClick, showActions, onEdit, onDelete, onReadMore }) 
         )}
 
         {/* Read More Link */}
-        <p
-          onClick={(e) => { e.stopPropagation(); onReadMore(blog._id); }}
-          className="text-green-600 mt-2 text-sm cursor-pointer hover:underline"
-        >
-          Read More
-        </p>
+        {onReadMore && (
+          <p
+            onClick={(e) => { e.stopPropagation(); onReadMore(blog._id); }}
+            className="text-green-600 mt-2 text-sm cursor-pointer hover:underline"
+          >
+            Read More
+          </p>
+        )}
 
         {/* Actions for MyBlogs */}
         {showActions && (
           <div className="flex justify-between mt-4">
-            {(blog.status === "draft" || blog.status === "ready") && (
+            {(blog.status === "draft" || blog.status === "ready") && onEdit && (
               <button
                 onClick={(e) => { e.stopPropagation(); onEdit(blog._id); }}
                 className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-500 transition"
@@ -58,7 +60,7 @@ const BlogCard = ({ blog, onClick, showActions, onEdit, onDelete, onReadMore }) 
               </button>
             )}
 
-            {blog.status !== "published" && (
+            {blog.status !== "published" && onDelete && (
               <button
                 onClick={(e) => { e.stopPropagation(); onDelete(blog._id, blog.status); }}
                 className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-500 transition"

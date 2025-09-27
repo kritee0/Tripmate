@@ -40,6 +40,7 @@ import SidebarWrapper from "../pages/admin/SideBarWrapper";
 import ManageRecommendation from "../pages/admin/AdminRecommendation"
 import ManageBlogs from "../pages/admin/ManageBlogs";
 import BlogDetails from "../pages/explorepage/blog/BlogDetails";
+import SuccessPage from "../pages/Esewa/SuccessPage"
 
 
 
@@ -64,6 +65,7 @@ const PageRoutes = () => {
       <Route path="/packages/:id" element={<MainLayout>< TravelPackages/></MainLayout>} />
 
       <Route path="/my-bookings" element={<MainLayout><BookingForm /></MainLayout>} />
+            <Route path="/esewa/success" element={<SuccessPage />} />
       
 
      

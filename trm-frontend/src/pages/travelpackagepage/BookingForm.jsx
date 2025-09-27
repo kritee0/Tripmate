@@ -1,17 +1,15 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useAuth } from "../../context/AuthContext"; // make sure this exists
-
 import { EasySewa } from "@prasuco/easy-sewa";
 import { v4 as uuidv4 } from "uuid";
 
 const BookingForm = ({ pkg, onClose }) => {
   const { user } = useAuth(); // ✅ get logged-in user
-
   const easySewa = new EasySewa({
     environment: "development",
-    failure_url: "http://localhost:3000/failure",
-    success_url: "http://localhost:4000/api/esewa/success",
+    failure_url: "http://localhost:5173/esewa/failure", // frontend page
+    success_url: "http://localhost:4000/api/esewa/success", // backend route to handle payment
     product_code: "EPAYTEST",
     secret: "8gBm/:&EnhH.1/q",
   });
@@ -170,61 +168,70 @@ const BookingForm = ({ pkg, onClose }) => {
           <form onSubmit={handleSubmit} className="space-y-3">
             {/* Display user info */}
             <div className="p-3 bg-gray-50 rounded border text-sm text-gray-700">
-              <p>
-                <strong>Name:</strong> {user?.name}
-              </p>
-              <p>
-                <strong>Email:</strong> {user?.email}
-              </p>
-              <p className="text-gray-500 mt-1">
-                These details will be used for the booking.
-              </p>
+              <p><strong>Name:</strong> {user?.name}</p>
+              <p><strong>Email:</strong> {user?.email}</p>
+              <p className="text-gray-500 mt-1">These details will be used for the booking.</p>
             </div>
 
-            {/* Editable fields */}
-            <input
-              type="text"
-              name="address"
-              value={formData.address}
-              onChange={handleChange}
-              placeholder="Enter Address"
-              className="w-full p-2 border rounded"
-              required
-            />
-            <input
-              type="text"
-              name="phoneNumber"
-              value={formData.phoneNumber}
-              onChange={handleChange}
-              placeholder="Contact Number"
-              className="w-full p-2 border rounded"
-              required
-            />
-            <input
-              type="number"
-              name="numberOfTravellers"
-              value={formData.numberOfTravellers}
-              onChange={handleChange}
-              min="1"
-              placeholder="Number of travellers"
-              className="w-full p-2 border rounded"
-              required
-            />
-            <input
-              type="date"
-              name="travelDate"
-              value={formData.travelDate}
-              onChange={handleChange}
-              className="w-full p-2 border rounded"
-              min={new Date().toISOString().split("T")[0]}
-              required
-            />
+            {/* Editable fields in two-column grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">Address</label>
+                <input
+                  type="text"
+                  name="address"
+                  value={formData.address}
+                  onChange={handleChange}
+                  placeholder="Enter Address"
+                  className="w-full p-2 border rounded"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-1">Contact Number</label>
+                <input
+                  type="text"
+                  name="phoneNumber"
+                  value={formData.phoneNumber}
+                  onChange={handleChange}
+                  placeholder="Contact Number"
+                  className="w-full p-2 border rounded"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-1">Number of Travellers</label>
+                <input
+                  type="number"
+                  name="numberOfTravellers"
+                  value={formData.numberOfTravellers}
+                  onChange={handleChange}
+                  min="1"
+                  placeholder="Number of travellers"
+                  className="w-full p-2 border rounded"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-1">Travel Date</label>
+                <input
+                  type="date"
+                  name="travelDate"
+                  value={formData.travelDate}
+                  onChange={handleChange}
+                  className="w-full p-2 border rounded"
+                  min={new Date().toISOString().split("T")[0]}
+                  required
+                />
+              </div>
+            </div>
 
             {/* Price info */}
             <div className="text-sm font-medium text-gray-800">
-              <div>
-                Price per person: Rs. {packagePrice.toLocaleString("en-IN")}
-              </div>
+              <div>Price per person: Rs. {packagePrice.toLocaleString("en-IN")}</div>
               <div>Total: Rs. {totalPrice.toLocaleString("en-IN")}</div>
             </div>
 
