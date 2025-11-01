@@ -38,12 +38,12 @@ export const createHotel = async (req, res) => {
       amenities: amenities ? JSON.parse(amenities) : [],
       roomFeatures: roomFeatures ? JSON.parse(roomFeatures) : [],
       location: {
-    type: "Point",
-    coordinates:
-      lat && long
-        ? [parseFloat(long), parseFloat(lat)]
-        : place.location?.coordinates || [0, 0],
-  },
+        type: "Point",
+        coordinates:
+          lat && long
+            ? [parseFloat(long), parseFloat(lat)]
+            : [0, 0],
+      },
     });
 
     await hotel.save();
@@ -114,10 +114,20 @@ export const getHotelById = async (req, res) => {
 export const updateHotel = async (req, res) => {
   try {
     const { id } = req.params;
-    const updateData = req.body;
+
+    let updateData = req.body;
     if (req.file) updateData.image = `/uploads/${req.file.filename}`;
 
-    const hotel = await Hotel.findByIdAndUpdate(id, updateData, { new: true });
+    const location = JSON.parse(updateData.location)
+    const amenities = JSON.parse(updateData.amenities)
+    const roomFeatures = JSON.parse(updateData.roomFeatures)
+
+    const newData = { ...updateData, location, amenities, roomFeatures }
+    console.log(newData)
+
+    const hotel = await Hotel.findByIdAndUpdate(id, newData, { new: true });
+
+
     if (!hotel) return res.status(404).json({ message: "Hotel not found" });
 
     res.json(hotel);

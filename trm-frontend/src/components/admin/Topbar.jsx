@@ -1,30 +1,39 @@
 import React from "react";
 import { useAuth } from "../../context/AuthContext";
-import { Bell } from "lucide-react";
+import { Bell, Menu } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-const TopBar = () => {
+const TopBar = ({ onMenuClick }) => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  // Navigate to profile page
   const handleProfileClick = () => {
     navigate("/admin/profile");
   };
 
   return (
     <div className="flex justify-between items-center bg-white shadow px-6 py-3">
+      {/* Left: Logo + Menu toggler for mobile */}
       <div className="flex items-center gap-2">
+        {/* Mobile menu button */}
+        {onMenuClick && (
+          <button
+            className="md:hidden p-2 rounded hover:bg-gray-200"
+            onClick={onMenuClick}
+          >
+            <Menu size={20} />
+          </button>
+        )}
         <span className="text-lg font-bold text-blue-600">TripMate</span>
       </div>
 
+      {/* Right: Notifications + Profile */}
       <div className="flex items-center gap-6">
         <button className="p-2 rounded-full hover:bg-gray-100 relative">
           <Bell size={20} />
           <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
         </button>
 
-        {/* Clickable Profile */}
         <div
           className="flex items-center gap-2 cursor-pointer"
           onClick={handleProfileClick}

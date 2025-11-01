@@ -12,7 +12,7 @@ import {
 } from "lucide-react"; 
 import { useAuth } from "../../context/AuthContext";
 
-const Sidebar = ({ onLogout }) => {
+const Sidebar = ({ onLogout, closeSidebar }) => {
   const { user } = useAuth();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
@@ -30,34 +30,39 @@ const Sidebar = ({ onLogout }) => {
   };
   const handleCancelLogout = () => setShowLogoutModal(false);
 
+  // Close sidebar on mobile when a link is clicked
+  const handleLinkClick = () => {
+    if (closeSidebar) closeSidebar();
+  };
+
   return (
     <>
-      <aside className="w-64 bg-white shadow-lg flex flex-col relative z-10">
+      <aside className="w-64 bg-white   flex flex-col  z-30 md:relative md:translate-x-0 fixed inset-y-0 left-0 transform transition-transform duration-300 ease-in-out">
         <div className="p-6 border-b">
           <h1 className="text-2xl font-bold text-blue-600">Admin Panel</h1>
           <p className="text-sm text-gray-500">Welcome, {user?.name}</p>
         </div>
 
         <nav className="flex-1 p-4 space-y-2">
-          <NavLink to="/admin/overview" className={linkClasses}>
+          <NavLink onClick={handleLinkClick} to="/admin/overview" className={linkClasses}>
             <BarChart2 size={20} /> Overview
           </NavLink>
-          <NavLink to="/admin/manage-user" className={linkClasses}>
+          <NavLink onClick={handleLinkClick} to="/admin/manage-user" className={linkClasses}>
             <Users size={20} /> Users
           </NavLink>
-          <NavLink to="/admin/manage-agencies" className={linkClasses}>
+          <NavLink onClick={handleLinkClick} to="/admin/manage-agencies" className={linkClasses}>
             <Building2 size={20} /> Agencies
           </NavLink>
-          <NavLink to="/admin/manage-places" className={linkClasses}>
+          <NavLink onClick={handleLinkClick} to="/admin/manage-places" className={linkClasses}>
             <MapPin size={20} /> Places
           </NavLink>
-          <NavLink to="/admin/manage-hotels" className={linkClasses}>
+          <NavLink onClick={handleLinkClick} to="/admin/manage-hotels" className={linkClasses}>
             <Home size={20} /> Hotels
           </NavLink>
-          <NavLink to="/admin/manage-recommendation" className={linkClasses}>
+          <NavLink onClick={handleLinkClick} to="/admin/manage-recommendation" className={linkClasses}>
             <Lightbulb size={20} /> Recommendation
           </NavLink>
-          <NavLink to="/admin/manage-blogs" className={linkClasses}>
+          <NavLink onClick={handleLinkClick} to="/admin/manage-blogs" className={linkClasses}>
             <Lightbulb size={20} /> Blogs
           </NavLink>
         </nav>
@@ -99,5 +104,3 @@ const Sidebar = ({ onLogout }) => {
 };
 
 export default Sidebar;
-
-
