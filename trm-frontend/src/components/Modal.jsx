@@ -1,6 +1,12 @@
 import { X } from "lucide-react";
 
-const Modal = ({ isOpen, onClose, title, children, maxWidth = "max-w-2xl" }) => {
+const Modal = ({
+  isOpen,
+  onClose,
+  title,
+  children,
+  maxWidth = "max-w-2xl",
+}) => {
   if (!isOpen) return null;
 
   return (
@@ -20,7 +26,7 @@ const Modal = ({ isOpen, onClose, title, children, maxWidth = "max-w-2xl" }) => 
         </div>
 
         {/* Content */}
-        <div className="p-5">{children}</div>
+        <div className="p-2">{children}</div>
       </div>
     </div>
   );

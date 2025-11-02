@@ -14,7 +14,9 @@ const PackageForm = ({ editingPackage, onSuccess, onCancel }) => {
     bestSeason: "",
     transportAvailableOnArrival: false,
     highlights: [""],
-    itinerary: [{ day: 1, title: "", activities: [""], meals: [""], accommodation: "" }],
+    itinerary: [
+      { day: 1, title: "", activities: [""], meals: [""], accommodation: "" },
+    ],
     policy: { included: [""], excluded: [""], cancellation: "", payment: "" },
   });
 
@@ -30,8 +32,11 @@ const PackageForm = ({ editingPackage, onSuccess, onCancel }) => {
         overview: editingPackage.overview || "",
         category: editingPackage.category || "",
         bestSeason: editingPackage.bestSeason || "",
-        transportAvailableOnArrival: editingPackage.transportAvailableOnArrival || false,
-        highlights: editingPackage.highlights?.length ? editingPackage.highlights : [""],
+        transportAvailableOnArrival:
+          editingPackage.transportAvailableOnArrival || false,
+        highlights: editingPackage.highlights?.length
+          ? editingPackage.highlights
+          : [""],
         itinerary: editingPackage.itinerary?.length
           ? editingPackage.itinerary.map((day, idx) => ({
               day: idx + 1,
@@ -40,8 +45,21 @@ const PackageForm = ({ editingPackage, onSuccess, onCancel }) => {
               meals: day.meals?.length ? day.meals : [""],
               accommodation: day.accommodation || "",
             }))
-          : [{ day: 1, title: "", activities: [""], meals: [""], accommodation: "" }],
-        policy: editingPackage.policy || { included: [""], excluded: [""], cancellation: "", payment: "" },
+          : [
+              {
+                day: 1,
+                title: "",
+                activities: [""],
+                meals: [""],
+                accommodation: "",
+              },
+            ],
+        policy: editingPackage.policy || {
+          included: [""],
+          excluded: [""],
+          cancellation: "",
+          payment: "",
+        },
       });
     }
   }, [editingPackage]);
@@ -56,7 +74,10 @@ const PackageForm = ({ editingPackage, onSuccess, onCancel }) => {
   const addArrayItem = (section) =>
     setFormData((prev) => ({ ...prev, [section]: [...prev[section], ""] }));
   const removeArrayItem = (section, index) =>
-    setFormData((prev) => ({ ...prev, [section]: prev[section].filter((_, i) => i !== index) }));
+    setFormData((prev) => ({
+      ...prev,
+      [section]: prev[section].filter((_, i) => i !== index),
+    }));
 
   // --- Itinerary Handlers ---
   const addDay = () =>
@@ -64,7 +85,13 @@ const PackageForm = ({ editingPackage, onSuccess, onCancel }) => {
       ...prev,
       itinerary: [
         ...prev.itinerary,
-        { day: prev.itinerary.length + 1, title: "", activities: [""], meals: [""], accommodation: "" },
+        {
+          day: prev.itinerary.length + 1,
+          title: "",
+          activities: [""],
+          meals: [""],
+          accommodation: "",
+        },
       ],
     }));
 
@@ -79,7 +106,9 @@ const PackageForm = ({ editingPackage, onSuccess, onCancel }) => {
   const updateDayField = (dayIndex, field, value) => {
     setFormData((prev) => ({
       ...prev,
-      itinerary: prev.itinerary.map((day, i) => (i === dayIndex ? { ...day, [field]: value } : day)),
+      itinerary: prev.itinerary.map((day, i) =>
+        i === dayIndex ? { ...day, [field]: value } : day
+      ),
     }));
   };
 
@@ -88,7 +117,12 @@ const PackageForm = ({ editingPackage, onSuccess, onCancel }) => {
       ...prev,
       itinerary: prev.itinerary.map((day, i) =>
         i === dayIndex
-          ? { ...day, [arrayName]: day[arrayName].map((item, j) => (j === index ? value : item)) }
+          ? {
+              ...day,
+              [arrayName]: day[arrayName].map((item, j) =>
+                j === index ? value : item
+              ),
+            }
           : day
       ),
     }));
@@ -108,7 +142,10 @@ const PackageForm = ({ editingPackage, onSuccess, onCancel }) => {
       ...prev,
       itinerary: prev.itinerary.map((day, i) =>
         i === dayIndex
-          ? { ...day, [arrayName]: day[arrayName].filter((_, j) => j !== index) }
+          ? {
+              ...day,
+              [arrayName]: day[arrayName].filter((_, j) => j !== index),
+            }
           : day
       ),
     }));
@@ -120,18 +157,26 @@ const PackageForm = ({ editingPackage, onSuccess, onCancel }) => {
       ...prev,
       policy: {
         ...prev.policy,
-        [section]: prev.policy[section].map((item, i) => (i === index ? value : item)),
+        [section]: prev.policy[section].map((item, i) =>
+          i === index ? value : item
+        ),
       },
     }));
   };
 
   const addPolicyItem = (section) =>
-    setFormData((prev) => ({ ...prev, policy: { ...prev.policy, [section]: [...prev.policy[section], ""] } }));
+    setFormData((prev) => ({
+      ...prev,
+      policy: { ...prev.policy, [section]: [...prev.policy[section], ""] },
+    }));
 
   const removePolicyItem = (section, index) =>
     setFormData((prev) => ({
       ...prev,
-      policy: { ...prev.policy, [section]: prev.policy[section].filter((_, i) => i !== index) },
+      policy: {
+        ...prev.policy,
+        [section]: prev.policy[section].filter((_, i) => i !== index),
+      },
     }));
 
   // --- Submit ---
@@ -152,10 +197,16 @@ const PackageForm = ({ editingPackage, onSuccess, onCancel }) => {
       const token = localStorage.getItem("token");
       const res = editingPackage
         ? await axios.put(`/api/packages/${editingPackage._id}`, data, {
-            headers: { "Content-Type": "multipart/form-data", Authorization: `Bearer ${token}` },
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${token}`,
+            },
           })
         : await axios.post("/api/packages", data, {
-            headers: { "Content-Type": "multipart/form-data", Authorization: `Bearer ${token}` },
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${token}`,
+            },
           });
 
       alert(`Package ${editingPackage ? "updated" : "created"} successfully!`);
@@ -167,7 +218,7 @@ const PackageForm = ({ editingPackage, onSuccess, onCancel }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-5xl mx-auto p-6 bg-gray-50 rounded-xl space-y-6">
+    <form onSubmit={handleSubmit} className="p-4 space-y-2 ">
       {/* Basic Info */}
       <div className="space-y-2">
         <input
@@ -182,14 +233,18 @@ const PackageForm = ({ editingPackage, onSuccess, onCancel }) => {
           type="text"
           placeholder="Location"
           value={formData.location}
-          onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+          onChange={(e) =>
+            setFormData({ ...formData, location: e.target.value })
+          }
           className="w-full border p-2 rounded"
           required
         />
         <textarea
           placeholder="Overview"
           value={formData.overview}
-          onChange={(e) => setFormData({ ...formData, overview: e.target.value })}
+          onChange={(e) =>
+            setFormData({ ...formData, overview: e.target.value })
+          }
           className="w-full border p-2 rounded"
           required
         />
@@ -199,7 +254,9 @@ const PackageForm = ({ editingPackage, onSuccess, onCancel }) => {
       <div className="grid md:grid-cols-4 gap-4">
         <select
           value={formData.category}
-          onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+          onChange={(e) =>
+            setFormData({ ...formData, category: e.target.value })
+          }
           className="border p-2 rounded"
           required
         >
@@ -215,14 +272,18 @@ const PackageForm = ({ editingPackage, onSuccess, onCancel }) => {
           type="text"
           placeholder="Best Season"
           value={formData.bestSeason}
-          onChange={(e) => setFormData({ ...formData, bestSeason: e.target.value })}
+          onChange={(e) =>
+            setFormData({ ...formData, bestSeason: e.target.value })
+          }
           className="border p-2 rounded"
         />
         <input
           type="text"
           placeholder="Duration"
           value={formData.duration}
-          onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
+          onChange={(e) =>
+            setFormData({ ...formData, duration: e.target.value })
+          }
           className="border p-2 rounded"
         />
         <input
@@ -241,7 +302,12 @@ const PackageForm = ({ editingPackage, onSuccess, onCancel }) => {
           <input
             type="checkbox"
             checked={formData.transportAvailableOnArrival}
-            onChange={(e) => setFormData({ ...formData, transportAvailableOnArrival: e.target.checked })}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                transportAvailableOnArrival: e.target.checked,
+              })
+            }
           />
           Transport Available On Arrival
         </label>
@@ -262,7 +328,9 @@ const PackageForm = ({ editingPackage, onSuccess, onCancel }) => {
         )}
         <input
           type="file"
-          onChange={(e) => setFormData({ ...formData, image: e.target.files[0] })}
+          onChange={(e) =>
+            setFormData({ ...formData, image: e.target.files[0] })
+          }
           accept="image/*"
           className="w-full"
         />
@@ -276,17 +344,27 @@ const PackageForm = ({ editingPackage, onSuccess, onCancel }) => {
             <input
               type="text"
               value={h}
-              onChange={(e) => handleArrayChange("highlights", i, e.target.value)}
+              onChange={(e) =>
+                handleArrayChange("highlights", i, e.target.value)
+              }
               className="flex-1 border p-2 rounded"
             />
             {formData.highlights.length > 1 && (
-              <button type="button" onClick={() => removeArrayItem("highlights", i)} className="text-red-600">
+              <button
+                type="button"
+                onClick={() => removeArrayItem("highlights", i)}
+                className="text-red-600"
+              >
                 <Trash2 />
               </button>
             )}
           </div>
         ))}
-        <button type="button" onClick={() => addArrayItem("highlights")} className="flex items-center gap-2 text-blue-600">
+        <button
+          type="button"
+          onClick={() => addArrayItem("highlights")}
+          className="flex items-center gap-2 text-blue-600"
+        >
           <Plus /> Add Highlight
         </button>
       </div>
@@ -299,7 +377,11 @@ const PackageForm = ({ editingPackage, onSuccess, onCancel }) => {
             <div className="flex justify-between items-center mb-2">
               <h4>Day {day.day}</h4>
               {formData.itinerary.length > 1 && (
-                <button type="button" onClick={() => removeDay(dayIndex)} className="text-red-600">
+                <button
+                  type="button"
+                  onClick={() => removeDay(dayIndex)}
+                  className="text-red-600"
+                >
                   <Trash2 />
                 </button>
               )}
@@ -308,7 +390,9 @@ const PackageForm = ({ editingPackage, onSuccess, onCancel }) => {
               type="text"
               placeholder="Day Title"
               value={day.title}
-              onChange={(e) => updateDayField(dayIndex, "title", e.target.value)}
+              onChange={(e) =>
+                updateDayField(dayIndex, "title", e.target.value)
+              }
               className="w-full border p-2 rounded mb-2"
             />
 
@@ -320,17 +404,34 @@ const PackageForm = ({ editingPackage, onSuccess, onCancel }) => {
                   <input
                     type="text"
                     value={a}
-                    onChange={(e) => updateNestedDayArray(dayIndex, "activities", i, e.target.value)}
+                    onChange={(e) =>
+                      updateNestedDayArray(
+                        dayIndex,
+                        "activities",
+                        i,
+                        e.target.value
+                      )
+                    }
                     className="flex-1 border p-2 rounded"
                   />
                   {day.activities.length > 1 && (
-                    <button type="button" onClick={() => removeNestedDayItem(dayIndex, "activities", i)} className="text-red-600">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        removeNestedDayItem(dayIndex, "activities", i)
+                      }
+                      className="text-red-600"
+                    >
                       <Trash2 />
                     </button>
                   )}
                 </div>
               ))}
-              <button type="button" onClick={() => addNestedDayItem(dayIndex, "activities")} className="flex items-center gap-2 text-blue-600">
+              <button
+                type="button"
+                onClick={() => addNestedDayItem(dayIndex, "activities")}
+                className="flex items-center gap-2 text-blue-600"
+              >
                 <Plus /> Add Activity
               </button>
             </div>
@@ -343,17 +444,27 @@ const PackageForm = ({ editingPackage, onSuccess, onCancel }) => {
                   <input
                     type="text"
                     value={m}
-                    onChange={(e) => updateNestedDayArray(dayIndex, "meals", i, e.target.value)}
+                    onChange={(e) =>
+                      updateNestedDayArray(dayIndex, "meals", i, e.target.value)
+                    }
                     className="flex-1 border p-2 rounded"
                   />
                   {day.meals.length > 1 && (
-                    <button type="button" onClick={() => removeNestedDayItem(dayIndex, "meals", i)} className="text-red-600">
+                    <button
+                      type="button"
+                      onClick={() => removeNestedDayItem(dayIndex, "meals", i)}
+                      className="text-red-600"
+                    >
                       <Trash2 />
                     </button>
                   )}
                 </div>
               ))}
-              <button type="button" onClick={() => addNestedDayItem(dayIndex, "meals")} className="flex items-center gap-2 text-blue-600">
+              <button
+                type="button"
+                onClick={() => addNestedDayItem(dayIndex, "meals")}
+                className="flex items-center gap-2 text-blue-600"
+              >
                 <Plus /> Add Meal
               </button>
             </div>
@@ -363,12 +474,18 @@ const PackageForm = ({ editingPackage, onSuccess, onCancel }) => {
               type="text"
               placeholder="Accommodation"
               value={day.accommodation}
-              onChange={(e) => updateDayField(dayIndex, "accommodation", e.target.value)}
+              onChange={(e) =>
+                updateDayField(dayIndex, "accommodation", e.target.value)
+              }
               className="w-full border p-2 rounded mt-2"
             />
           </div>
         ))}
-        <button type="button" onClick={addDay} className="flex items-center gap-2 text-blue-600">
+        <button
+          type="button"
+          onClick={addDay}
+          className="flex items-center gap-2 text-blue-600"
+        >
           <Plus /> Add Day
         </button>
       </div>
@@ -384,17 +501,27 @@ const PackageForm = ({ editingPackage, onSuccess, onCancel }) => {
                 <input
                   type="text"
                   value={item}
-                  onChange={(e) => handlePolicyArrayChange(section, i, e.target.value)}
+                  onChange={(e) =>
+                    handlePolicyArrayChange(section, i, e.target.value)
+                  }
                   className="flex-1 border p-2 rounded"
                 />
                 {formData.policy[section].length > 1 && (
-                  <button type="button" onClick={() => removePolicyItem(section, i)} className="text-red-600">
+                  <button
+                    type="button"
+                    onClick={() => removePolicyItem(section, i)}
+                    className="text-red-600"
+                  >
                     <Trash2 />
                   </button>
                 )}
               </div>
             ))}
-            <button type="button" onClick={() => addPolicyItem(section)} className="flex items-center gap-2 text-blue-600">
+            <button
+              type="button"
+              onClick={() => addPolicyItem(section)}
+              className="flex items-center gap-2 text-blue-600"
+            >
               <Plus /> Add {section.slice(0, -1)}
             </button>
           </div>
@@ -405,14 +532,24 @@ const PackageForm = ({ editingPackage, onSuccess, onCancel }) => {
             type="text"
             placeholder="Cancellation Policy"
             value={formData.policy.cancellation}
-            onChange={(e) => setFormData((prev) => ({ ...prev, policy: { ...prev.policy, cancellation: e.target.value } }))}
+            onChange={(e) =>
+              setFormData((prev) => ({
+                ...prev,
+                policy: { ...prev.policy, cancellation: e.target.value },
+              }))
+            }
             className="border p-2 rounded"
           />
           <input
             type="text"
             placeholder="Payment Policy"
             value={formData.policy.payment}
-            onChange={(e) => setFormData((prev) => ({ ...prev, policy: { ...prev.policy, payment: e.target.value } }))}
+            onChange={(e) =>
+              setFormData((prev) => ({
+                ...prev,
+                policy: { ...prev.policy, payment: e.target.value },
+              }))
+            }
             className="border p-2 rounded"
           />
         </div>
@@ -420,10 +557,17 @@ const PackageForm = ({ editingPackage, onSuccess, onCancel }) => {
 
       {/* Buttons */}
       <div className="flex gap-4">
-        <button type="submit" className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+        <button
+          type="submit"
+          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+        >
           <Save /> {editingPackage ? "Update Package" : "Save Package"}
         </button>
-        <button type="button" onClick={onCancel} className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+        >
           Cancel
         </button>
       </div>
@@ -432,4 +576,3 @@ const PackageForm = ({ editingPackage, onSuccess, onCancel }) => {
 };
 
 export default PackageForm;
-
